@@ -344,7 +344,7 @@ In the application's **TURN Config** section, enter the required values. The exa
 
 | Field | Example |
 |---|---|
-| TURN Server / Host | `turn:YOUR_PUBLIC_IP:5349` |
+| TURN Server / Host | `turn:YOUR_PUBLIC_IP` |
 | Username | The username configured for TURN |
 | Password | The password configured for TURN |
 
