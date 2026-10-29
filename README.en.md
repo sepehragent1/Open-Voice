@@ -1,358 +1,603 @@
-<div align="center">
+ <div align="center">
 
-[🇬🇧 English](README.en.md) | [🇮🇷 فارسی](README.md)
+[🇮🇷 فارسی](README.md) | [🇬🇧 English](README.en.md)
 
 </div>
 
-# Open Voice
+# 🎙️ Open Voice
 
-**A lightweight, self-hosted peer-to-peer voice chat application.**
+**A lightweight, self-hosted P2P voice chat application.**
 
-Open Voice is an open-source voice chat project built with Flutter and WebRTC, inspired by the simplicity of Discord voice channels. It is designed to let users communicate directly with each other without relying on a centralized voice hosting service.
-
-The project allows you to host your own room, invite other users, and establish voice connections using WebRTC.
-
-**Repository:** [sepehragent1/Open-Voice](https://github.com/sepehragent1/Open-Voice)  
-**Downloads:** [GitHub Releases](https://github.com/sepehragent1/Open-Voice/releases)
-
-## Features
-
-- **Peer-to-peer voice communication:** Uses WebRTC to establish audio connections between participants.
-- **Self-hosted rooms:** Host a room using the Windows application.
-- **Cross-platform support:** Available for Windows and Android.
-- **Flutter-based:** The application is built with Flutter.
-- **NAT traversal support:** STUN/TURN configuration can help establish connections across different networks.
-- **Secure media transport:** WebRTC uses DTLS-SRTP to protect media connections.
-- **Password protection:** Room authentication can use Argon2id for password hashing, where implemented by the application.
-
-## Important: Before You Start
-
-Open Voice uses a self-hosted signaling architecture. Before hosting a room, make sure you understand the following requirements.
-
-### 1. The host must run the Windows application
-
-The Windows application acts as the local signaling server for the room. The host must keep the application running while other users connect.
-
-The signaling server helps participants discover and establish connections with each other. Voice traffic can then travel directly between participants when the network allows it.
-
-### 2. Hosting from outside your local network requires network configuration
-
-If you want people outside your home network to join your room, you may need to:
-
-- Find your public IP address.
-- Allow the required port through Windows Firewall.
-- Configure port forwarding on your router.
-- Make sure your internet connection has a publicly reachable IP address.
-
-**Important:** If your ISP uses Carrier-Grade NAT (CGNAT), router port forwarding alone may not work. You may need a public IP address or a properly configured external TURN server.
-
-### 3. TURN is recommended for difficult network conditions
-
-Some networks, especially mobile networks, restrictive Wi-Fi networks, and CGNAT connections, may prevent direct peer-to-peer connections.
-
-A TURN server can relay WebRTC traffic when a direct connection cannot be established. This can improve connectivity, but it requires a reachable TURN server and valid configuration.
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/sepehragent1/Open-Voice)
+[![Flutter](https://img.shields.io/badge/Flutter-Powered-02569B?logo=flutter)](https://flutter.dev/)
+[![WebRTC](https://img.shields.io/badge/Communication-WebRTC-333333)](https://webrtc.org/)
 
 ---
 
-## Download and Install
+## 📖 About the Project
 
-Download the appropriate release from the [GitHub Releases page](https://github.com/sepehragent1/Open-Voice/releases).
+**Open Voice** is a peer-to-peer (P2P) voice chat application developed using Flutter and WebRTC, inspired by applications such as Discord.
 
-### Windows
+The goal of this project is to provide a simple way for users to communicate by voice without relying on a permanent centralized server to manage every aspect of their communication.
 
-Depending on the available release assets, you can use either of the following:
+In the Open Voice architecture, the host computer acts as a local **Signaling Server**, while users rely on WebRTC to establish connections with one another. When a direct connection is possible, audio can travel directly between participants. Some network environments may require a TURN server.
 
-- **Setup installer:** Download and run the Windows setup executable.
-- **Portable version:** Download the portable ZIP archive, extract it, and run the application executable.
+### ✨ Key Features
 
-#### Windows SmartScreen warning
+- 🎙️ Voice communication using WebRTC
+- 🔗 Peer-to-peer connections whenever possible
+- 🖥️ Room hosting through the Windows application
+- 📱 Android application support
+- 🏠 Self-hosted architecture without a permanent centralized room-management server
+- 🔐 Security technologies for protecting voice communication and passwords
+- 🪶 Lightweight design built with Flutter
+- 🌐 Connect users across different locations through the internet
 
-Windows may display a Microsoft Defender SmartScreen warning if the application is not widely recognized or does not have a trusted code-signing certificate.
+> **Note:** P2P does not mean the application can operate without any server in every situation. Initial connection setup requires signaling, and a TURN server may be necessary to relay media under certain network conditions.
 
-Only run the application if you downloaded it from the official Open Voice repository and trust the source. Do not bypass security warnings for files from unknown sources.
+## 📋 Table of Contents
 
-### Android
-
-1. Download the Android APK from the official releases page.
-2. Open the downloaded APK on your device.
-3. If prompted, allow installation from that source in your Android settings.
-4. Complete the installation and launch Open Voice.
-
-Android may warn you when installing an APK outside the Play Store. Verify that the APK came from the official project release before installing it.
+- [Critical Requirements](#-critical-requirements)
+- [Installation Guide](#-installation-guide)
+- [Hosting a Voice Room](#-hosting-a-voice-room)
+- [Network Configuration and Port Forwarding](#-network-configuration-and-port-forwarding)
+- [Setting Up a TURN Server](#-setting-up-a-turn-server)
+- [Development and Building from Source](#-development-and-building-from-source)
+- [Security Considerations](#-security-considerations)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
 
 ---
 
-## Hosting a Room on Windows
+## ⚠️ Critical Requirements
 
-### Step 1: Start the application
+Please read these requirements carefully before installing the application and hosting a room. Without the necessary configuration, other users may not be able to connect.
 
-Launch Open Voice on the Windows computer that will host the room.
+### 1. The Host Must Use the Windows Application
 
-### Step 2: Start the room or signaling server
+The person creating the room, referred to as the **Host**, must run the Windows version of Open Voice.
 
-Use the application's room-hosting controls to start hosting. The host must keep the application running for the duration of the session.
+The Windows application acts as the local **Signaling Server**, exchanging the information required to establish connections between participants.
 
-The signaling server uses port `8080` by default in the setup described below. If your application uses a different port, replace `8080` with the configured value throughout these instructions.
+Therefore, the Android application alone cannot be used to host a room.
 
-### Step 3: Allow the port through Windows Firewall
+### 2. Access to Your Router's Administration Panel
 
-Open **Command Prompt as Administrator** and run:
+The host must have access to their router's administration panel to configure **Port Forwarding**.
 
-```bat
+If port forwarding is not configured correctly, users outside the host's local network may be unable to reach the Signaling Server.
+
+### 3. Check Your Public IP Address and CGNAT Status
+
+To allow users to connect over the internet, the host must check their public IP address and network configuration.
+
+A publicly reachable IPv4 address is important for the usual port-forwarding method. If the host's internet connection uses Carrier-Grade NAT (CGNAT), configuring port forwarding on the router alone is generally insufficient.
+
+Depending on the application's architecture and network configuration, you may need an alternative solution, such as obtaining a public IPv4 address from your internet service provider or using a TURN server.
+
+### 4. A TURN Server Is Recommended for Mobile Networks
+
+Using a TURN server is **strongly recommended** for users connecting through mobile internet, particularly on networks that use CGNAT.
+
+TURN can relay media through an intermediary server when a direct WebRTC connection cannot be established.
+
+> **Note:** A TURN server does not automatically replace the Signaling Server. These services have different responsibilities.
+
+---
+
+## 📥 Installation Guide
+
+### 🖥️ Installing the Windows Version
+
+The Windows version is required for hosting rooms. Depending on the files available in the project's Releases section, choose one of the following installation methods.
+
+**Method 1: Setup.exe**
+
+1. Visit the [project's GitHub Releases page](https://github.com/sepehragent1/Open-Voice/releases).
+2. Open the latest release.
+3. Download the Windows installer with the `.exe` extension.
+4. Run the setup file and follow the installation instructions.
+5. Launch Open Voice after installation.
+
+**Method 2: Portable Version**
+
+1. Download the Portable ZIP archive from the Releases page.
+2. Extract the archive into a folder.
+3. Run the application executable from the extracted folder.
+
+The portable version does not require a separate installation process.
+
+#### Windows SmartScreen Warning
+
+Windows may display a warning that the publisher is unknown or that the file's reputation has not been established. This warning does not necessarily mean the application is malicious, but it should not be ignored without checking the source.
+
+If you downloaded the file from the official project repository and trust its source, you may see the following options:
+
+1. Click **More info**.
+2. Select **Run anyway**.
+
+Only proceed if you have verified that the file came from a source you trust.
+
+### 📱 Installing the Android Version
+
+1. Visit the [GitHub Releases page](https://github.com/sepehragent1/Open-Voice/releases).
+2. Download the Android APK.
+3. Open the APK on your Android device.
+4. If prompted, enable installation from that source in Android settings.
+5. If Google Play Protect displays a warning, review the details before deciding whether to continue.
+6. Complete the installation and launch the application.
+
+It is recommended to download the APK only from the official project repository or another trusted release source.
+
+**Note:** The Android version is intended for joining rooms. Hosting a room still requires the Windows version.
+
+---
+
+## 🏠 Hosting a Voice Room
+
+This section is for users who want to create a room and allow other participants to connect.
+
+### Step 1: Launch the Windows Application
+
+Run Open Voice on your Windows computer.
+
+The host computer must remain powered on, and the hosting application must continue running while the room is in use. Shutting down the computer or stopping the Signaling Server may prevent new users from connecting and, depending on the implementation, may also disrupt existing connections.
+
+### Step 2: Configure the Port
+
+In the hosting or signaling settings, set the port to:
+
+`8080`
+
+This port must be consistent across the application, Windows Firewall, and router configuration.
+
+### Step 3: Find Your Computer's Local IP Address
+
+Open Command Prompt in Windows and run:
+
+```cmd
+ipconfig
+```
+
+In the output, locate the IPv4 address of the network adapter connected to your router.
+
+For example:
+
+```text
+IPv4 Address . . . . . . . . . . : 192.168.1.100
+```
+
+In this example, `192.168.1.100` is the computer's local IP address. Your actual address may be different.
+
+It is recommended to create a DHCP reservation for the host computer in your router settings so that its local IP address does not change.
+
+### Step 4: Find Your Public IP Address
+
+You can use a trusted IP-checking service to view your public IP address. For example:
+
+[https://ifconfig.me](https://ifconfig.me)
+
+If you have a usable public IPv4 address, the displayed address is generally the one external users need to reach your host.
+
+However, if your network uses CGNAT or another router exists upstream, ordinary port forwarding may not work.
+
+### Step 5: Share the Connection Information
+
+After configuring your network, provide participants with the information required to connect.
+
+The connection details must match the connection method and fields provided by the version of Open Voice you are using. For example, if the application asks for a server address and port, participants must enter the host's publicly reachable address and the correct port.
+
+**Security note:** Never publish login information, passwords, or other confidential data in the public GitHub repository or public messages.
+
+---
+
+## 🌐 Network Configuration and Port Forwarding
+
+To allow users on external networks to connect, incoming traffic must be forwarded to the host computer.
+
+This guide assumes that the signaling port is `8080`.
+
+### 1. Configure Windows Firewall
+
+Windows Firewall may block incoming connections. To allow TCP and UDP traffic on port 8080, open Command Prompt **as Administrator**.
+
+Run the following commands:
+
+**Allow TCP connections**
+
+```cmd
 netsh advfirewall firewall add rule name="Open Voice TCP 8080" dir=in action=allow protocol=TCP localport=8080
 ```
 
-If the application also requires UDP traffic on this port, add:
+**Allow UDP connections**
 
-```bat
+```cmd
 netsh advfirewall firewall add rule name="Open Voice UDP 8080" dir=in action=allow protocol=UDP localport=8080
 ```
 
-Only open the protocols and ports actually required by your application's signaling and networking configuration. WebSocket-based signaling normally uses TCP; WebRTC media and TURN traffic may use different ports.
+These commands create inbound firewall rules. They do not guarantee that the application is listening on both protocols.
 
-### Step 4: Configure router port forwarding
+If the Signaling Server uses TCP only, the UDP rule will not help that service. If the application uses additional ports or protocols for WebRTC communication, configure the appropriate rules for the actual implementation.
 
-To allow users outside your local network to reach the signaling server, sign in to your router's administration panel.
+To remove these rules later, run:
 
-Find the section usually named **Port Forwarding**, **Virtual Server**, or **NAT**.
+```cmd
+netsh advfirewall firewall delete rule name="Open Voice TCP 8080"
+netsh advfirewall firewall delete rule name="Open Voice UDP 8080"
+```
 
-Create a rule with the following settings:
+> **Security recommendation:** Create only the firewall rules required by the application instead of disabling Windows Firewall entirely.
+
+### 2. Configure Port Forwarding on Your Router
+
+Sign in to your router's administration panel. The address varies by router model and is often available through the router documentation or the Default Gateway shown by `ipconfig`.
+
+Look for a section named something like:
+
+- Port Forwarding
+- Virtual Server
+- NAT
+- Port Mapping
+
+Create a new rule using the following settings:
 
 | Setting | Value |
 |---|---|
-| Name | Open Voice |
-| Internal IP address | The host computer's local IPv4 address |
-| External port | `8080` |
-| Internal port | `8080` |
-| Protocol | TCP, if required by the signaling server |
+| Service Name | Open Voice |
+| External Port | `8080` |
+| Internal Port | `8080` |
+| Internal IP | The host computer's local IPv4 address |
+| Protocol | TCP and UDP, if required by the application |
+| Status | Enabled |
 
-If the application requires additional protocols or ports, configure them according to the actual implementation.
+For example, if the host computer's local address is `192.168.1.100`, incoming traffic on port 8080 should be forwarded to that address on port 8080.
 
-It is recommended to assign the host computer a reserved local IP address through your router's DHCP settings so that the forwarding rule does not break when the address changes.
+If your router does not allow TCP and UDP to be selected together, create separate rules.
 
-### Step 5: Share the connection information
+After saving the settings, make sure the host computer's local IP address has not changed.
 
-Find your public IP address and provide the connection information required by Open Voice to the people you want to invite.
+### 3. Verify the Configuration
 
-Do not share your router administrator password or other private credentials.
+To check whether a TCP service is listening on port 8080, run the following command in PowerShell:
 
-**Security note:** Exposing a port makes a service reachable from outside your network. Only expose the ports the application needs, and keep the application updated.
+```powershell
+Get-NetTCPConnection -State Listen -LocalPort 8080
+```
+
+If no results appear, the service may not be running or may be using a different port.
+
+You can also test the connection from a device outside the host's local network. Testing your public address from within the same network is not always reliable because some routers do not support NAT loopback.
+
+**Important:** An open firewall port or a router forwarding rule does not, by itself, prove that the service is reachable over the internet. The service must be running, the network path must be configured correctly, and CGNAT must not be preventing inbound access.
 
 ---
 
-## TURN Server Setup (Optional)
+## 🔄 Setting Up a TURN Server
 
-A TURN server can relay WebRTC traffic when two participants cannot establish a direct connection.
+### What Is TURN, and Why Is It Needed?
 
-You can use a hosted TURN provider or configure your own server. Self-hosting TURN requires a publicly reachable server and appropriate firewall and network configuration.
+WebRTC attempts to find a suitable network path between two devices. In many network environments, a direct P2P connection works. However, NAT and CGNAT can prevent a direct connection on some networks, particularly mobile networks.
 
-### Example: Install Coturn on Ubuntu
+In these situations, **TURN** can relay media traffic through an intermediary server.
 
-On an Ubuntu server, install Coturn:
+For example, a host may be reachable through a home internet connection while a participant using mobile internet cannot establish a suitable direct path. If the application and network configuration support it, TURN may resolve the media connectivity problem.
+
+### Step 1: Prepare a Server
+
+You need an Ubuntu system or a WSL environment with the necessary permissions to install and run Coturn.
+
+To install Coturn on Ubuntu:
 
 ```bash
 sudo apt update
 sudo apt install coturn
 ```
 
-Open the configuration file:
+In WSL, check network access, IP addressing, firewall rules, and external reachability separately. Installing Coturn in WSL does not automatically make the server accessible over the internet.
+
+For reliable public access, a server with a public IP address and an appropriate network configuration is generally a better choice.
+
+### Step 2: Run Coturn
+
+The following command is an example of running Coturn with the settings used in this guide:
 
 ```bash
-sudo nano /etc/turnserver.conf
+sudo turnserver -n -a -u myuser:mypassword -r myrealm -p 5349 -L 0.0.0.0 --min-port 49152 --max-port 65535
 ```
 
-A basic configuration example is shown below:
+Important parameters:
 
-```ini
-listening-port=3478
-fingerprint
-lt-cred-mech
-realm=your-domain.example
-user=openvoiceuser:REPLACE_WITH_A_STRONG_PASSWORD
-```
-
-Replace the example domain and password with your own values. This is a starting point, not a complete production configuration. Depending on your server's network topology, you may also need to configure its external IP address, relay port range, TLS settings, and authentication.
-
-Enable and start the service:
-
-```bash
-sudo systemctl enable coturn
-sudo systemctl restart coturn
-sudo systemctl status coturn
-```
-
-Configure the server firewall and any upstream firewall or router to permit the ports required by your Coturn configuration. The default listening port shown above is `3478`; relay traffic may use a separate UDP port range.
-
-For production deployments, use a secure configuration and avoid exposing an unauthenticated open relay.
-
-### Configure TURN in Open Voice
-
-Enter the values supported by the application's TURN configuration interface:
-
-| Field | Description |
+| Parameter | Description |
 |---|---|
-| TURN URL | The TURN server address and transport, such as `turn:turn.example.com:3478` |
-| Username | The TURN authentication username |
-| Password | The TURN authentication credential |
+| `-n` | Run without reading a configuration file |
+| `-a` | Enable authentication |
+| `-u` | Set the username and password |
+| `-r` | Set the authentication realm |
+| `-p 5349` | Set the TURN listening port |
+| `-L 0.0.0.0` | Listen on all local IPv4 addresses |
+| `--min-port` | Set the minimum relay port |
+| `--max-port` | Set the maximum relay port |
 
-The exact field names and accepted URL formats depend on the implementation. Use the formats expected by the version of Open Voice you are running.
+In this example, `myuser`, `mypassword`, and `myrealm` are placeholders. Replace them with appropriate values for your environment.
 
-A TURN server is not the same as the signaling server. They serve different purposes, and configuring one does not automatically configure the other.
+For public use, choose a strong password and never commit confidential credentials to a public repository.
+
+### Step 3: Open the TURN Ports
+
+Port `5349` is the TURN listening port in this configuration. Ports `49152` through `65535` are the configured relay port range.
+
+For internet access, the listening port and relay port range must be allowed by the server firewall and, if NAT is present, by the relevant router or network firewall. The required protocols depend on your configuration.
+
+In this example, the listening port is set to 5349. This does **not** automatically mean that TURN over TLS is enabled. TLS requires the appropriate certificate, server configuration, and client connection URI.
+
+For reliable public access, also check:
+
+- The server's public address and NAT configuration
+- Firewall rules and cloud security groups
+- Access to the relay port range
+- Coturn's external IP configuration when NAT is involved
+- Client support for the selected protocol and connection method
+
+### Step 4: Enter the TURN Configuration in Open Voice
+
+In the application's **TURN Config** section, enter the required values. The exact field names may differ between application versions.
+
+| Field | Example |
+|---|---|
+| TURN Server / Host | `turn:YOUR_PUBLIC_IP:5349` |
+| Username | The username configured for TURN |
+| Password | The password configured for TURN |
+
+The example above uses a TURN URI with UDP as the default transport. The URI, protocol, and fields must match the WebRTC implementation used by your version of Open Voice.
+
+**Important:** Entering TURN credentials into the application is not sufficient on its own. The server must be running, its ports must be reachable, and the client and server configurations must be compatible. Test server accessibility first, then test voice communication.
 
 ---
 
-## Build from Source
+## 🛠️ Development and Building from Source
 
-If you want to compile Open Voice yourself, install the required development tools first:
+Open Voice is built with Flutter. To contribute to development, you need the Flutter SDK, the tools required by your target platform, and the project source code.
 
-- Flutter SDK
-- Dart SDK (included with Flutter)
+Official repository:
+
+[https://github.com/sepehragent1/Open-Voice](https://github.com/sepehragent1/Open-Voice)
+
+### Development Requirements
+
+- Flutter SDK compatible with the project
+- Dart SDK compatible with Flutter
 - Git
-- Android SDK and the required Android build tools for Android builds
-- The Windows development toolchain required by Flutter for Windows builds
+- Android SDK for building the Android version
+- Visual Studio with the **Desktop development with C++** workload for building the Windows version
 
-Clone the repository:
+Check the project's configuration files for the required Flutter version and other dependencies.
+
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/sepehragent1/Open-Voice.git
 cd Open-Voice
 ```
 
-Install dependencies:
+### Step 2: Install Dependencies
 
 ```bash
 flutter pub get
 ```
 
-Check your development environment:
+This command downloads the dependencies declared in `pubspec.yaml`.
+
+### Step 3: Check Your Development Environment
 
 ```bash
 flutter doctor
 ```
 
-### Run the application
+Review the output and resolve any issues involving SDKs, compilers, or target platform tools.
 
-For Windows:
+### Step 4: Run the Windows Version
 
 ```bash
 flutter run -d windows
 ```
 
-For Android, connect a device with USB debugging enabled or start an Android emulator:
+Windows desktop support must be enabled in Flutter, and the required Windows build tools must be installed.
 
-```bash
-flutter devices
-flutter run -d <device_id>
-```
-
-Replace `<device_id>` with the device identifier reported by Flutter.
-
-### Build for Windows
-
-```bash
-flutter build windows --release
-```
-
-The release build is normally generated under:
-
-```text
-build/windows/x64/runner/Release/
-```
-
-The exact output directory can vary with the Flutter version and build configuration.
-
-### Build an Android APK
+### Step 5: Build the Android Release APK
 
 ```bash
 flutter build apk --release
 ```
 
-The APK is normally generated at:
+If the build succeeds, Flutter normally creates the APK at:
 
 ```text
 build/app/outputs/flutter-apk/app-release.apk
 ```
 
-For distribution, test the release build on real devices and verify that all required assets, permissions, and networking settings work correctly.
+This is Flutter's default output path. If the project build configuration has been modified, the output location may differ.
+
+### Other Useful Commands
+
+Analyze the source code:
+
+```bash
+flutter analyze
+```
+
+Run tests, if available:
+
+```bash
+flutter test
+```
+
+List available devices:
+
+```bash
+flutter devices
+```
+
+To suggest improvements, fix bugs, or add features, you can fork the repository and submit a pull request.
 
 ---
 
-## Security and Privacy
+## 🔐 Security Considerations
+
+### Secure Media and Password Handling
 
 Open Voice uses WebRTC for peer-to-peer communication.
 
-- **DTLS-SRTP:** WebRTC uses DTLS-SRTP to protect media in transit between peers.
-- **Password hashing:** Argon2id is designed for password hashing and can help protect stored password verifiers when correctly implemented.
-- **Self-hosting:** Hosting your own signaling server gives you control over that part of the connection infrastructure.
+WebRTC supports DTLS-SRTP to protect media in transit. Password security depends on the application's actual authentication and password-storage implementation.
 
-Keep in mind that transport encryption does not automatically guarantee end-to-end security for every part of an application. Signaling, authentication, server configuration, credential handling, and any relayed traffic must also be implemented and configured correctly.
+The security of the application also depends on signaling, credential handling, server configuration, and network exposure.
 
-Do not publish private TURN credentials, passwords, API keys, or other secrets in source code or public repositories.
+### Security Recommendations for Hosts
+
+- Open only the ports required by the application.
+- Use strong passwords for accounts and TURN services.
+- Never publish passwords or confidential credentials in the public repository.
+- Obtain software and dependencies from trusted sources.
+- Do not expose a public TURN relay without appropriate authentication and access controls.
+- Consider usage limits and access restrictions when operating a public server.
+
+> **Note:** Media encryption does not guarantee complete anonymity, hide every user's IP address, or secure every component of the system. P2P communication and network configuration may expose information such as IP addresses to other participants.
 
 ---
 
-## Troubleshooting
+## 🧰 Troubleshooting
 
-### Other users cannot connect to my room
+### Issue 1: Users Cannot Connect to the Room
 
 Check the following:
 
-1. Confirm that Open Voice is running on the host computer.
-2. Verify that the signaling server is listening on the expected port.
-3. Check Windows Firewall rules.
-4. Confirm that router port forwarding points to the correct local IP address.
-5. Verify that your ISP provides a publicly reachable IP address and that CGNAT is not preventing inbound connections.
+1. The Windows application is running on the host computer.
+2. The port configured in the application matches the firewall and router settings.
+3. The host computer's local IP address has not changed.
+4. Port-forwarding rules point to the correct address.
+5. The host's internet connection is active.
+6. The host is not behind CGNAT, or an appropriate alternative has been configured.
 
-### Users on mobile networks cannot connect
+### Issue 2: The Connection Works, but There Is No Audio
 
-Mobile networks often use CGNAT or restrictive NAT configurations.
+Successful signaling does not necessarily mean that the media path is working.
 
-Try configuring a reachable TURN server and ensure that the necessary TURN ports are open. A TURN server must be accessible from the participants' networks to help relay their traffic.
+Check the following:
 
-### Local connections work, but external connections fail
+- Microphone permissions in Windows and Android
+- Correct audio input and output devices
+- Whether the microphone is muted
+- WebRTC configuration and media negotiation
+- ICE candidate errors
+- TURN server accessibility, if used
+- Relay port availability and TURN configuration compatibility
 
-This often indicates a problem with port forwarding, the host's firewall, the public IP address, or ISP-level NAT.
+If participants use mobile internet or restricted networks, a correctly configured TURN server may resolve media connectivity issues.
 
-Test the connection from a network outside the host's local network. Testing a public address from inside the same network may fail on routers that do not support NAT loopback.
+### Issue 3: Users Cannot Connect over Mobile Internet
 
-### Voice connections fail even though the room is reachable
+Some mobile operators use CGNAT, which can limit direct connections between devices.
 
-Successful signaling does not necessarily mean that the WebRTC media connection can be established.
+In this situation:
 
-Check the ICE connection state, STUN/TURN configuration, firewall restrictions, and whether a TURN relay is available when direct connectivity fails.
+1. Test the connection using a different network.
+2. Make sure the TURN server is accessible over the internet.
+3. Verify the TURN configuration values.
+4. Check the listening port and relay port range.
+5. Review Coturn and WebRTC logs for errors.
 
-### The Windows application does not start
+If TURN is incorrectly configured, simply enabling the TURN option in the application will not solve the problem.
 
-- Check whether Windows blocked the downloaded file.
-- Make sure you downloaded a complete release archive or installer.
-- Try downloading the release again from the official repository.
-- If building from source, run `flutter doctor` and review the build output for missing dependencies.
+### Issue 4: The Connection Drops After Some Time
+
+Disconnections can have several causes:
+
+- The host application closes.
+- The host computer shuts down or loses internet access.
+- The network or IP address changes.
+- The WebRTC connection expires or its network path changes.
+- NAT or firewall restrictions interfere with the connection.
+- A participant's internet connection becomes unstable.
+- The TURN server stops running.
+
+First, determine whether the Signaling Server is still running and whether the media connection has also failed. Application and server logs can help identify the cause.
+
+### Issue 5: Local Connections Work, but External Connections Fail
+
+This usually indicates a problem with external network access.
+
+Check for:
+
+- Incorrect port forwarding
+- An incorrect local IP address
+- CGNAT
+- A second router or double NAT
+- Firewall restrictions
+- A router that does not support NAT loopback when testing the public IP from inside the same network
+
+For a reliable external connectivity test, use a device connected to a different network.
+
+### Issue 6: Flutter Commands Fail
+
+If Flutter commands return errors, run:
+
+```bash
+flutter doctor
+flutter pub get
+```
+
+Review the output. Problems involving SDKs, dependencies, permissions, or build tools are often identified at this stage.
+
+### Issue 7: The TURN Server Runs, but Connections Still Fail
+
+Check the following:
+
+- Username, password, and realm
+- Public server address
+- TURN listening port
+- Firewall and NAT rules
+- Relay port range
+- Compatibility between the client and server protocols
+- TLS settings, if applicable
+
+Also remember that successfully reaching the listening port does not necessarily mean the relay ports are accessible.
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
-Contributions, bug reports, and suggestions are welcome.
+Open Voice welcomes contributions that help improve the project.
 
 If you want to contribute:
 
 1. Fork the repository.
-2. Create a branch for your change.
-3. Make and test your changes.
-4. Submit a pull request describing what changed and why.
+2. Make your changes in a separate branch.
+3. Review and test your changes where possible.
+4. Commit your changes.
+5. Submit a pull request with a clear explanation of what changed and why.
 
-For bug reports, include relevant logs, your operating system, the application version, and the steps needed to reproduce the issue. Avoid including passwords, private IP information that you do not wish to share, or TURN credentials.
+When reporting a bug, include:
 
-## Support and Issues
+- Your operating system and application version
+- Steps to reproduce the issue
+- Expected and actual behavior
+- Relevant error messages or logs
+- The type of network being used, if relevant
 
-For bug reports, feature requests, and technical discussions, visit the official repository:
-
-[**Open Voice on GitHub**](https://github.com/sepehragent1/Open-Voice)
+Avoid including passwords, other people's private IP information, authentication credentials, or other sensitive data in public reports.
 
 ---
 
-<div align="center">
+## 💬 Final Notes
 
-**Open Voice — Your room. Your connections. Your voice.**
+Open Voice aims to provide a lightweight, self-hosted voice chat experience. It uses direct P2P connections whenever possible and requires signaling to establish connections between participants.
 
-</div>
+For a successful setup, prioritize these three requirements:
+
+- The host must run the Windows application.
+- Firewall and port-forwarding rules must be configured correctly.
+- TURN should be configured for networks where direct WebRTC connections cannot be established.
+
+Thank you for checking out Open Voice and taking an interest in the project.
+
+**Official repository:** [sepehragent1/Open-Voice](https://github.com/sepehragent1/Open-Voice)
+
