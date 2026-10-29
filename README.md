@@ -345,7 +345,7 @@ sudo turnserver -n -a -u myuser:mypassword -r myrealm -p 5349 -L 0.0.0.0 --min-p
 | فیلد | مقدار نمونه |
 |---|---|
 | TURN Server / Host | turn:آیپی عمومی مودم |
-| Username | `myuser` |
+| Username |یوزرنیم انتخاب شده برای TURN |
 | Password | رمز انتخاب‌شده برای TURN |
 
 این نمونه برای انتقال TURN روی UDP است. پروتکل، URI و فیلدهای مورد استفاده باید با قابلیت‌های پیاده‌سازی WebRTC در نسخهٔ فعلی برنامه هماهنگ باشند.
