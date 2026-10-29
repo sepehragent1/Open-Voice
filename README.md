@@ -1,3 +1,9 @@
+<div align="center">
+
+[🇮🇷 فارسی](README.md) | [🇬🇧 English](README.en.md)
+
+</div>
+
 # 🎙️ Open Voice | اوپن ویس
 
 **یک برنامهٔ سبک، متن‌باز و خودمیزبان برای گفت‌وگوی صوتی با معماری P2P**
